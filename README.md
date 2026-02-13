@@ -1,3 +1,3 @@
 # practica-actions-cicd-notificaciones
 
-##Ejemplo de automatización con GitHub Actions.
+## Ejemplo de automatización con GitHub Actions.
