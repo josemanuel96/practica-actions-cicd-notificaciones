@@ -1,4 +1,4 @@
-name: Test Hola Mundo (JS) y Notificacion
+name: Test Hola Mundo (JS) + ntfy
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Ejecutar app.js y validar salida
+      - name: Ejecutar app.js y validar salida (falla si no coincide)
         id: test
         shell: bash
         run: |
@@ -31,20 +31,21 @@ jobs:
           else
             echo "resultado=fail" >> $GITHUB_OUTPUT
             echo "mensaje=El programa no imprimió exactamente 'Hola Mundo'. Imprimió: $output" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
-      - name: Notificacion de Exito
-        if: steps.test.outputs.resultado == 'success'
+      - name: Notificacion a ntfy (exito)
+        if: success()
         run: |
           curl -H "Title: ✅ Test Exitoso (JS)" \
                -H "Priority: high" \
-               -d "El programa app.js imprimió correctamente 'Hola Mundo'. Todo está correcto." \
+               -d "El test pasó: app.js imprimió exactamente 'Hola Mundo'." \
                https://ntfy.sh/devops-itla-josemanuelvicente
 
-      - name: Notificacion de Error
-        if: steps.test.outputs.resultado == 'fail'
+      - name: Notificacion a ntfy (fallo + retroalimentacion)
+        if: failure()
         run: |
           curl -H "Title: ❌ Test Fallido (JS)" \
                -H "Priority: urgent" \
-               -d "Hubo un fallo en el test. ${{ steps.test.outputs.mensaje }}" \
+               -d "El test falló. ${{ steps.test.outputs.mensaje }}" \
                https://ntfy.sh/devops-itla-josemanuelvicente
