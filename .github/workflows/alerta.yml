@@ -40,7 +40,7 @@ jobs:
           curl -H "Title: ✅ Test Exitoso (JS)" \
                -H "Priority: high" \
                -d "El test pasó: app.js imprimió exactamente 'Hola Mundo'." \
-               https://ntfy.sh/devops-itla-josemanuelvicente
+               https://ntfy.sh/devops-itla
 
       - name: Notificacion a ntfy (fallo + retroalimentacion)
         if: failure()
@@ -48,4 +48,4 @@ jobs:
           curl -H "Title: ❌ Test Fallido (JS)" \
                -H "Priority: urgent" \
                -d "El test falló. ${{ steps.test.outputs.mensaje }}" \
-               https://ntfy.sh/devops-itla-josemanuelvicente
+               https://ntfy.sh/devops-itla
