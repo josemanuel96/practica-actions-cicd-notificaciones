@@ -1,0 +1,21 @@
+name: Notificacion DevOps ITLA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  enviar-notificacion:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Enviar notificacion a ntfy
+        run: |
+          curl -H "Title: Nuevo Push en main 🚀" \
+               -H "Priority: high" \
+               -d "Se ha realizado un push al repositorio de Jose Manuel en la rama main." \
+               https://ntfy.sh/devops-itla-josemanuelvicente
