@@ -1,4 +1,4 @@
-name: Notificacion DevOps ITLA
+name: Test Hola Mundo (JS) y Notificacion
 
 on:
   push:
@@ -6,16 +6,45 @@ on:
       - main
 
 jobs:
-  enviar-notificacion:
+  test-y-notificar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del repositorio
+      - name: Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: Enviar notificacion a ntfy
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar app.js y validar salida
+        id: test
+        shell: bash
         run: |
-          curl -H "Title: Nuevo Push en main 🚀" \
+          output=$(node app.js)
+
+          echo "Salida del programa: $output"
+
+          if [ "$output" = "Hola Mundo" ]; then
+            echo "resultado=success" >> $GITHUB_OUTPUT
+          else
+            echo "resultado=fail" >> $GITHUB_OUTPUT
+            echo "mensaje=El programa no imprimió exactamente 'Hola Mundo'. Imprimió: $output" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notificacion de Exito
+        if: steps.test.outputs.resultado == 'success'
+        run: |
+          curl -H "Title: ✅ Test Exitoso (JS)" \
                -H "Priority: high" \
-               -d "Se ha realizado un push al repositorio de Jose Manuel en la rama main." \
+               -d "El programa app.js imprimió correctamente 'Hola Mundo'. Todo está correcto." \
+               https://ntfy.sh/devops-itla-josemanuelvicente
+
+      - name: Notificacion de Error
+        if: steps.test.outputs.resultado == 'fail'
+        run: |
+          curl -H "Title: ❌ Test Fallido (JS)" \
+               -H "Priority: urgent" \
+               -d "Hubo un fallo en el test. ${{ steps.test.outputs.mensaje }}" \
                https://ntfy.sh/devops-itla-josemanuelvicente
